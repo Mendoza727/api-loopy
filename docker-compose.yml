@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}           # Usar la variable de entorno para el usuario
+      POSTGRES_PASSWORD: ${DB_PASSWORD}   # Usar la variable de entorno para la contraseña
+      POSTGRES_DB: ${DB_NAME}             # Usar la variable de entorno para la base de datos
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  backend:
+    build: .
+    container_name: backend_app
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5433
+      DB_USER: ${DB_USER}           # Usar la variable de entorno para el usuario
+      DB_PASSWORD: ${DB_PASSWORD}   # Usar la variable de entorno para la contraseña
+      DB_NAME: ${DB_NAME}           # Usar la variable de entorno para la base de datos
+    ports:
+      - "8081:8081"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: ["sh", "-c", "echo $DB_PASSWORD && npm run start"]
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

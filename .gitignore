@@ -1,0 +1,11 @@
+# Ignorar la carpeta de dependencias
+/node_modules/
+
+# Ignorar archivos de log
+*.log
+
+# Ignorar configuraciones de sistema
+.DS_Store
+
+.env
+node_modules
