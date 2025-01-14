@@ -1,7 +1,7 @@
 import { userServices } from '../../services/user/userServices';
 import { UserDTO } from "../../interfaces/user.interfaces";
 import { Request, Response } from "express";
-import uploadFile from '@/utils/uploadFiles.helper';
+import uploadFile from '@/utils/uploadFiles.utils';
 
 export class userController {
   private user = new userServices();
