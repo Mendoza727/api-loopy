@@ -10,6 +10,15 @@ COPY package*.json ./
 # Instala las dependencias de tu aplicación
 RUN npm install
 
+RUN apt-get update && apt-get install -y \
+    libcairo2-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    libpango1.0-dev \
+    libpixman-1-dev \
+    libgtk2.0-dev
+    
 # Copia todos los archivos de la aplicación al contenedor
 COPY . .
 

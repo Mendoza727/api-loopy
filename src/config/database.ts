@@ -1,21 +1,24 @@
-import { Comment } from "../models/comments.model";
-import { User } from "../models/user.model";
-import { Video } from "../models/videos.model";
 import "reflect-metadata";
 import { DataSource } from "typeorm";
+
+import { CommentVideo, User, Video } from "../models";
 
 // Configuración de la base de datos con TypeORM
 export const appDataSource = new DataSource({
   type: "postgres",
-  host: 'localhost',
-  username: "loopy",
-  port: 5433,
-  password: "RbhF6M0eu9r",
-  database: "db_loopy",
+  host: 'db', // db => docker container
+  username: process.env.DB_USER,
+  port: Number(process.env.DB_PORT),
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   synchronize: false,
-  logging: true,
-  entities: [User, Video, Comment],
-  migrations: ["src/migrations/**/*.ts"],
+  logging: true, // loggin false in production
+  entities: [
+    User,
+    Video,
+    CommentVideo
+  ],
+  migrations: ["src/migrations/*.ts"]
 });
 
 // Inicializamos la conexión de la base de datos
