@@ -1,44 +1,45 @@
 import { appDataSource } from "@/config/database";
 import { UserDTO } from "@/interfaces/user.interfaces";
 import { User } from "@/models/user.model";
-
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export class userServices {
-    private userRepository = appDataSource.getRepository(User);
-    
-    async createUser(userData: UserDTO): Promise<User> {
-        const {
-            username,
-            email,
-            avatar,
-            password,
-            created_at,
-            updated_at
-        } = userData;
+  private userRepository = appDataSource.getRepository(User);
 
-        const existingUser = await this.userRepository.findOne({
-            where: { email }
-        });
+  async verifyEmail(email: string) {
+    const existEmail = await this.userRepository.findOne({
+      where: {email }
+    });
 
-        if (existingUser) throw new Error(`Email has existing please verify the data`);
+    if (existEmail.email === email) return true;
+    return false;
+  }
 
+  async createUser(userData: UserDTO): Promise<User> {
+    const { username, email, avatar, password } = userData;
 
-        // encrypt password for save in the database
-        const hashedPassword = await bcrypt.hash(
-            password,
-            30
-        );
+    console.log(password);
 
-        // register the new user
-        const user = this.userRepository.create({
-            username,
-            email,
-            avatar,
-            created_at,
-            updated_at
-        });
-
-        return await this.userRepository.save(user);
+    if (!password || typeof password !== "string" || password.trim() === "") {
+      throw new Error("password is not valid");
     }
+
+    const existingUser = await this.verifyEmail(email);
+
+    if (existingUser)
+      throw new Error(`El correo ya está en uso, por favor verifica los datos`);
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = this.userRepository.create({
+      username,
+      email,
+      password: hashedPassword,
+      avatar,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+
+    return await this.userRepository.save(user);
+  }
 }

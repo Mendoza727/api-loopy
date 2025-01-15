@@ -33,7 +33,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    command: ["sh", "-c", "echo $DB_PASSWORD && npm run start"]
+    command: ["sh", "-c", "npm run start"]
     depends_on:
       - db
     networks:

@@ -1,3 +1,8 @@
+export interface userLoginDTO {
+    email: string;
+    password: string;
+}
+
 export interface UserDTO {
     id: number;
     username: string;

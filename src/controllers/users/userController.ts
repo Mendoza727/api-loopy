@@ -1,43 +1,54 @@
-import { userServices } from '../../services/user/userServices';
+import { userServices } from "../../services/user/userServices";
 import { UserDTO } from "../../interfaces/user.interfaces";
+import { uploadImage } from "@/utils/uploadFiles.utils";
 import { Request, Response } from "express";
-import uploadFile from '@/utils/uploadFiles.utils';
 
+const userService = new userServices();
 export class userController {
-  private user = new userServices();
-
-  async registerUser(req: Request, res: Response): Promise<Response | any> {
-    // Primero, subimos el archivo usando el helper
-    uploadFile(req, res, async (err) => {
-      if (err) {
-        return res.status(400).json({ message: 'Error al subir el avatar', error: err.message });
-      }
-
-      // Si la subida es exitosa, obtener el nombre del archivo (avatar)
-      const avatar = req.file ? req.file.filename : null;
-
-      // Recoger los datos del usuario
+  async registerUser(req: Request, res: Response): Promise<Response> {
+    try {
       const userData: UserDTO = req.body;
-      if (avatar) {
-        // Si hay un avatar, añadirlo a los datos del usuario
-        userData.avatar = avatar;
-      }
 
-      try {
-        // Llamar al servicio para crear el usuario
-        const newUser = await this.user.createUser(userData);
+      const isEmailExit = userService.verifyEmail(userData.email);
+      console.log(isEmailExit);
 
-        // Devolver respuesta con el usuario creado
+      if (!isEmailExit) {
+        // register this not exits
+        await uploadImage(req as any, res as any);
+        const avatar = req.file ? req.file.filename : null;
+
+        if (avatar) {
+          userData.avatar = avatar; // Asignar el nombre del archivo como avatar
+        }
+
+        const newUser = userService.createUser(userData);
+
         return res.status(201).json({
-          message: 'Usuario registrado con éxito',
-          user: newUser
+          message: "Usuario registrado con éxito",
+          user: (await newUser).avatar,
         });
-      } catch (error) {
-        return res.status(500).json({
-          message: 'Error al registrar el usuario',
-          error: error.message
+      } else {
+        return res.status(409).json({
+          message: `this email has existing please review your data`,
         });
       }
-    });
+    } catch (error) {
+      console.error(error); // Asegúrate de ver el error en la consola
+      return res.status(409).json({
+        message: "Error al registrar el usuario",
+        error: error.message,
+      });
+    }
+  }
+
+  async loginUser(req: Request, res: Response): Promise<Response> {
+    try {
+    } catch (error) {
+      console.error(error); // Asegúrate de ver el error en la consola
+      return res.status(500).json({
+        message: "Error al registrar el usuario",
+        error: error.message,
+      });
+    }
   }
 }

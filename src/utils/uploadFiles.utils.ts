@@ -1,67 +1,40 @@
-import multer from "multer";
-import path from "path";
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
-// verificamos el tipo de archivo
-const fileFilter = (req: any, file: any, cb: any) => {
-  const fileTypes = /jpeg|jpg|png|gif|mp4|avi|mov/;
-  const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
-  const mimeType = fileTypes.test(file.mimetype);
+export const uploadImage = (req: Request, res: Response): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const uploadPath = path.join(__dirname, '..', 'assets'); // Ruta de la carpeta 'assets'
 
-  if (extname && mimeType) {
-    return cb(null, true);
-  } else {
-    return cb(new Error("unsuportted file"), false);
-  }
-};
-
-// configuracion del almacenamiento de multer
-const storage = multer.diskStorage({
-  destination: function (req: any, file: any, cb: any) {
-    // comprobamos tipo de imagen
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, "assets/images/"); // Carpeta para imágenes
-    } else if (file.mimetype.startsWith("video/")) {
-      cb(null, "assets/videos/"); // Carpeta para videos
-    } else {
-      cb(new Error("Tipo de archivo no válido"), false);
+    // Crear el directorio 'assets' si no existe
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
     }
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9); // Nombre único
-    cb(
-      null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
-    ); // Nombre del archivo
-  },
-});
 
-// inicializamos el multer
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-});
+    const storage = multer.diskStorage({
+      destination: (req, file, cb) => cb(null, uploadPath), // Ruta de destino
+      filename: (req, file, cb) => {
+        const fileExtension = path.extname(file.originalname); // Obtener extensión
+        const fileName = `${Date.now()}${fileExtension}`; // Nombre único para el archivo
+        cb(null, fileName); // Asignar nombre al archivo
+      }
+    });
 
-// helper
-const uploadFile = (req, res, next) => {
-  upload.single("file")(req, res, (err) => {
-    if (err) {
-      return res
-        .status(400)
-        .json({ message: "Error al subir el archivo", error: err.message });
-    }
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ message: "No se ha recibido ningún archivo" });
-    }
-    // Retorna el nombre del archivo
-    res
-      .status(200)
-      .json({
-        message: "Archivo subido con éxito",
-        filename: req.file.filename,
-      });
+    const upload = multer({
+      storage,
+      fileFilter: (req, file, cb) => {
+        const allowedTypes = /jpeg|jpg|png|gif/;
+        const isValid = allowedTypes.test(path.extname(file.originalname).toLowerCase()) && allowedTypes.test(file.mimetype);
+        cb(null, isValid); // Validar tipo de archivo
+      }
+    }).single('avatar'); // Campo del formulario
+
+    upload(req as any, res as any, (err: any) => {
+      if (err) {
+        reject(err); // Rechazar promesa si hay error
+      } else {
+        resolve(); // Resolver promesa si todo es exitoso
+      }
+    });
   });
 };
-
-export default uploadFile;

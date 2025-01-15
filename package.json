@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
@@ -26,7 +27,6 @@
     "eslint": "^9.18.0",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.9.5",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
@@ -34,8 +34,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "axios": "^1.7.9",
-    "faker": "^6.6.6",
+    "bcryptjs": "^2.4.3",
     "module-alias": "^2.2.3",
     "morgan": "^1.10.0",
     "pg": "^8.13.1",
