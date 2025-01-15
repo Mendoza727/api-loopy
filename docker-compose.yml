@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   db:
     image: postgres:latest
@@ -7,6 +5,7 @@ services:
     env_file:
       - .env
     environment:
+      
       POSTGRES_USER: ${DB_USER}           # Usar la variable de entorno para el usuario
       POSTGRES_PASSWORD: ${DB_PASSWORD}   # Usar la variable de entorno para la contraseña
       POSTGRES_DB: ${DB_NAME}             # Usar la variable de entorno para la base de datos
@@ -24,7 +23,7 @@ services:
       - .env
     environment:
       DB_HOST: db
-      DB_PORT: 5433
+      DB_PORT: 5432
       DB_USER: ${DB_USER}           # Usar la variable de entorno para el usuario
       DB_PASSWORD: ${DB_PASSWORD}   # Usar la variable de entorno para la contraseña
       DB_NAME: ${DB_NAME}           # Usar la variable de entorno para la base de datos

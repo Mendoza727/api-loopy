@@ -7,12 +7,12 @@ import { CommentVideo, User, Video } from "../models";
 export const appDataSource = new DataSource({
   type: "postgres",
   host: 'db', // db => docker container
-  username: "loopy",
-  port: 5433,
-  password: "RbhF6M0eu9r",
-  database: "db_loopy",
+  username: process.env.DB_USER,
+  port: Number(process.env.DB_PORT),
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   synchronize: false,
-  logging: true,
+  logging: true, // loggin false in production
   entities: [
     User,
     Video,
