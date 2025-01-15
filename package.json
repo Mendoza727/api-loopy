@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "main": "app.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --exec ts-node -r tsconfig-paths/register src/app.ts",
+    "run-migrations": "npx ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js migration:run -d src/config/database.ts",
+    "revert-migrations": "npx ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js migration:revert -d src/config/database.ts",
+    "show-migrations": "npx ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js migration:show -d src/config/database.ts",
+    "create-docker-container": "docker-compose up --build",
     "build": "tsc"
   },
   "keywords": [],
@@ -35,6 +38,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "canvas": "^3.0.1",
     "module-alias": "^2.2.3",
     "morgan": "^1.10.0",
     "pg": "^8.13.1",

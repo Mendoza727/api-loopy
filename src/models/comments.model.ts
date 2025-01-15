@@ -3,7 +3,7 @@ import { Video } from './videos.model';
 import { User } from './user.model';
 
 @Entity('comments')
-export class Comment {
+export class CommentVideo {
     @PrimaryGeneratedColumn()
     id: number;
 

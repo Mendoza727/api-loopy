@@ -1,23 +1,18 @@
+import "reflect-metadata";
+
 import express, { Application } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import { userRoutes } from "./routes/users/user.routes";
-import { connectDatabase } from "./config/database";
+import { appDataSource, connectDatabase } from "./config/database";
+import path from "path";
 
 // Cargar variables de entorno
 dotenv.config();
 
-const app: Application = express();
+const app = express();
 const port = process.env.PORT || 8081;
-
-connectDatabase()
-  .then(() => {
-    console.log("Conexión a la base de datos exitosa");
-  })
-  .catch((error) => {
-    console.error("Error al conectar con la base de datos", error);
-  });
 
 // Middlewares
 app.use(cors());
@@ -31,11 +26,24 @@ app.use("/api/v1/hello-word", (req, res) => {
 });
 
 // apis user
-app.use("/api/v1/users", userRoutes());
+app.use("/api/v1/auth", userRoutes());
+
+// directory image
+app.use("/assets", express.static(path.join(__dirname, "assets")));
+
 
 // Iniciar el servidor
 app.listen(port, () => {
   console.log(`Servidor escuchando en el puerto ${port}`);
+
+  try {
+    appDataSource.initialize()
+    .then(async () => {
+      console.log("Conexión con PostgreSQL establecida.");
+    })
+  } catch (error) {
+    console.error('Error connecting database');
+  }
 });
 
 export default app;
