@@ -8,6 +8,8 @@ const useController = new userController();
 export const userRoutes = () => {
   router.post("/register", useController.registerUser.bind(useController));
   router.post('/login', useController.authLogin.bind(useController));
+
+  
   return router;
 };
 

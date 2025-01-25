@@ -1,11 +1,11 @@
-import { appDataSource } from "../../config/database";
+import { appDataSourceSelected } from "../../../config";
 import { UserDTO, userLoginDTO } from "../../interfaces/user.interfaces";
 import { User } from "../../models/user.model";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 
 export class userServices {
-  private userRepository = appDataSource.getRepository(User);
+  private userRepository = appDataSourceSelected.getRepository(User);
 
   async verifyEmail(email: string) {
     const existEmail = await this.userRepository.exists({
@@ -77,5 +77,11 @@ export class userServices {
       user: userWithoutPassword,
       token, // El token generado
     };
+  }
+
+  async getUserById(id: number) {
+    return await this.userRepository.findOne({
+      where: { id }
+    });
   }
 }
