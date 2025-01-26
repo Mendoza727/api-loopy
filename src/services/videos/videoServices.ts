@@ -1,13 +1,37 @@
 import { Video } from "../../models/videos.model";
-import { appDataSourceSelected } from "../../../config";
 import { VideoDTO } from "../../interfaces/video.interface";
 import { userServices } from "../../services/user/userServices";
+import { UserDTO } from "../../interfaces/user.interfaces";
+import appDataSource from "../../config/database";
 
 export class videoServices extends userServices {
-  private videoRepository = appDataSourceSelected.getRepository(Video);
+  private videoRepository = appDataSource.getRepository(Video);
 
   async getVideos() {
-    return await this.videoRepository.find();
+    const videos = await this.videoRepository.find({
+      relations: ["user"],
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        url: true,
+        likes: true,
+        comments: true,
+        hashtags: true,
+        created_at: true,
+        updated_at: true,
+        user: {
+          id: true,
+          username: true,
+          avatar: true,
+          followers: true,
+          following: true,
+        },
+      },
+      order: { created_at: "DESC" },
+    });
+
+    return videos;
   }
 
   async getVideoById(id: number) {
@@ -93,4 +117,34 @@ export class videoServices extends userServices {
     const updatedVideo = await this.videoRepository.save(video);
     return updatedVideo;
   }
+
+  async getVideosByUser(user: UserDTO) {
+    const videos = await this.videoRepository.find({
+      where: {
+        user: { id: user.id },  // Compara el id del usuario con el id de la relación 'user' en el video
+      },
+      relations: ["user"],
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        url: true,
+        likes: true,
+        comments: true,
+        hashtags: true,
+        created_at: true,
+        updated_at: true,
+        user: {
+          id: true,
+          username: true,
+          avatar: true,
+          followers: true,
+          following: true,
+        },
+      },
+      order: { created_at: "DESC" },
+    });
+  
+    return videos;
+  }  
 }

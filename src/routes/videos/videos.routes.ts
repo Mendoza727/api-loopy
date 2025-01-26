@@ -9,6 +9,7 @@ const useController = new videoController();
 export const videoRoutes = () => {
     router.post("/create", useController.createVideo.bind(useController));
     router.get("/get-videos", useController.getVideos.bind(useController));
+    router.post("/update/:id", useController.updateVideo.bind(useController));
     router.get("/:id", useController.getVideoById.bind(useController));
     
     return router;

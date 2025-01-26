@@ -1,14 +1,12 @@
 import "reflect-metadata";
-
-import express, { Application } from "express";
+import { connectDatabase } from "./config/database";
+import { followRoutes, userRoutes, videoRoutes } from './routes';
 import cors from "cors";
 import dotenv from "dotenv";
+import express, { Application } from "express";
 import morgan from "morgan";
-import { userRoutes } from "./routes/users/user.routes";
-import { connectDatabase } from "./config/database";
 import path from "path";
 import tokenMiddleware from "../src/middleware/token.middleware";
-import { videoRoutes } from "./routes/videos/videos.routes";
 
 // Cargar variables de entorno
 dotenv.config();
@@ -38,7 +36,7 @@ app.use(morgan("dev"));
 // apis user, video, comments
 app.use("/api/v1/auth", userRoutes());
 app.use('/api/v1/video', tokenMiddleware, videoRoutes());
-
+app.use('/api/v1/follows', tokenMiddleware, followRoutes());
 
 // directory image
 app.use("/assets", express.static(path.join(__dirname, "assets")));

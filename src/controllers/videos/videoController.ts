@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { VideoDTO } from "../../interfaces/video.interface";
-import { videoServices } from "../../services/videos/videoServices";
 import { uploadVideo } from "../../utils/uploadFiles.utils";
+import { VideoDTO } from "../../interfaces/video.interface";
+import { videoServices } from "../../services";
 
 const videoService = new videoServices();
 
@@ -46,7 +46,6 @@ export class videoController {
       };
   
       // Aquí podrías guardar los datos en la base de datos si es necesario
-      console.log("Video data:", videoData);
       const newVideo = await videoService.createVideo(videoData);
   
       return res.status(201).json({
@@ -99,13 +98,12 @@ export class videoController {
     }
   }
 
-
   async updateVideo(req: Request, res: Response): Promise<Response<VideoDTO>> {
     try {
-      const { id } = req.params;
+      const { idVideo } = req.params;
       const videoData: VideoDTO = req.body;
 
-      const video = await videoService.updateVideo(Number(id), videoData);
+      const video = await videoService.updateVideo(Number(idVideo), videoData);
 
       return res.status(200).json({
         message: "Video updated successfully",
