@@ -1,11 +1,11 @@
-import { appDataSourceSelected } from "../../../config";
+import appDataSource from "../../config/database";
 import { UserDTO, userLoginDTO } from "../../interfaces/user.interfaces";
 import { User } from "../../models/user.model";
 import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 
 export class userServices {
-  private userRepository = appDataSourceSelected.getRepository(User);
+  private userRepository = appDataSource.getRepository(User);
 
   async verifyEmail(email: string) {
     const existEmail = await this.userRepository.exists({
