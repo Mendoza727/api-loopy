@@ -1,10 +1,12 @@
-import { userServices } from "../../services/user/userServices";
-import { UserDTO, userLoginDTO } from "../../interfaces/user.interfaces";
+
 import { Request, Response } from "express";
+import { UserDTO, userLoginDTO } from "../../interfaces/user.interfaces";
+import { userServices,  FollowServices, videoServices} from "../../services";
 import generateAvatar from "../../utils/generateAvatars.utils";
 
 const userService = new userServices();
-
+const followService = new FollowServices();
+const videos = new videoServices();
 export class userController {
   async registerUser(req: Request, res: Response): Promise<Response<UserDTO>> {
     try {
@@ -46,11 +48,22 @@ export class userController {
       const userData: userLoginDTO = req.body;
 
       const login = await userService.loginUser(userData);
+      const ownVideos = await videos.getVideosByUser(login.user);
+      const getInfoFollow = await followService.getFollowers(login.user.id);
+      const getInfoFollowing = await followService.getFollowing(login.user.id);
+
+      console.log(getInfoFollow);
 
       if (login) {
         return res.status(200).json({
           message: "Credenciales Validas, Bienvenido",
-          user: login, // Retorna el usuario recién creado
+          user: {
+            ...login.user,
+            followers: getInfoFollow,
+            following: getInfoFollowing,
+          }, // Retorna el usuario recién creado
+          videos: ownVideos,
+          token: login.token
         });
       }
     } catch (error) {

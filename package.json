@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nodemon --exec ts-node -r tsconfig-paths/register src/app.ts",
     "run-migrations": "npx ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js migration:run -d src/config/database.ts",
+    "generate-migration": "npx ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js migration:generate -n",
     "revert-migrations": "npx ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js migration:revert -d src/config/database.ts",
     "show-migrations": "npx ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js migration:show -d src/config/database.ts",
     "create-docker-container": "docker-compose up --build",

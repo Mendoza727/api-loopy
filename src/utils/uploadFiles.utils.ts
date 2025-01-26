@@ -1,15 +1,14 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { v4 as uuidv4 } from "uuid"; // Para generar UID
+import { Request, Response } from "express";
 
-export const uploadImage = (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const uploadVideo = (req: Request, res: Response): Promise<{ path: string }> => {
   return new Promise((resolve, reject) => {
-    const uploadPath = path.join(__dirname, "..", "assets");
+    const uploadPath = path.join(__dirname, "..", "assets", "videos");
 
-    // Crear la carpeta `assets` si no existe
+    // Crear la carpeta `videos` si no existe
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
@@ -17,8 +16,8 @@ export const uploadImage = (
     const storage = multer.diskStorage({
       destination: (req, file, cb) => cb(null, uploadPath), // Guardar archivo
       filename: (req, file, cb) => {
-        const fileExtension = path.extname(file.originalname); // Obtener extensión
-        const fileName = `${Date.now()}${fileExtension}`; // Nombre único
+        const fileExtension = ".mp4"; // Extensión fija
+        const fileName = `${uuidv4()}${fileExtension}`; // Nombre único con UID
         cb(null, fileName);
       },
     });
@@ -26,19 +25,27 @@ export const uploadImage = (
     const upload = multer({
       storage,
       fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|gif/;
-        const isValid =
-          allowedTypes.test(path.extname(file.originalname).toLowerCase()) &&
-          allowedTypes.test(file.mimetype);
-        cb(null, isValid); // Validar archivo
+        const allowedType = "video/mp4";
+        const isValid = file.mimetype === allowedType; // Validar que sea tipo MP4
+        if (!isValid) {
+          cb(new Error("Only .mp4 videos are allowed!")); // Rechazar si no es válido
+        } else {
+          cb(null, true); // Aceptar archivo
+        }
       },
-    }).single("avatar"); // Campo del formulario
+    }).single("url"); // Campo del formulario
 
     upload(req as any, res as any, (err: any) => {
       if (err) {
         reject(err); // Rechazar si hay error
       } else {
-        resolve(); // Resolver cuando todo haya salido bien
+        if (!req.file) {
+          reject(new Error("No file uploaded"));
+          return;
+        }
+
+        const relativePath = `videos/${req.file.filename}`; // Ruta relativa
+        resolve({ path: relativePath }); // Resolver con ruta relativa
       }
     });
   });

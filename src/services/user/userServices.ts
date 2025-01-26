@@ -1,4 +1,4 @@
-import { appDataSource } from "../../config/database";
+import appDataSource from "../../config/database";
 import { UserDTO, userLoginDTO } from "../../interfaces/user.interfaces";
 import { User } from "../../models/user.model";
 import bcrypt from 'bcryptjs';
@@ -77,5 +77,11 @@ export class userServices {
       user: userWithoutPassword,
       token, // El token generado
     };
+  }
+
+  async getUserById(id: number) {
+    return await this.userRepository.findOne({
+      where: { id }
+    });
   }
 }
