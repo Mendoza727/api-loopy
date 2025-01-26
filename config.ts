@@ -19,7 +19,7 @@ const appDataSourceDevelopment = new DataSource({
     host: "localhost",
     username: "loopy",
     port: 5433,
-    password: "your_pasword",
+    password: "RbhF6M0eu9r",
     database: "db_loopy",
     synchronize: true,
     logging: true,
